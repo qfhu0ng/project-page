@@ -3,331 +3,261 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light dark" />
   <title>Understanding Mobile LLM Agents’ Security Threats under Prompt Injection via Third-Party Channels (Anonymous)</title>
-  <meta name="description" content="A systematic study of indirect prompt injection attacks against mobile LLM agents via third-party channels, with a scalable automated red-teaming pipeline and MITRE-grounded taxonomy." />
+  <meta name="description" content="Anonymous project page for CCS submission." />
   <style>
     :root{
-      --bg:#0b0c10; --card:#11131a; --muted:#a7adbb; --fg:#e9ecf1;
-      --line:rgba(255,255,255,.10); --soft:rgba(255,255,255,.06);
-      --accent:#7c5cff; --accent2:#21c7a8;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius:18px;
-      --max: 1080px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --bg:#ffffff;
+      --fg:#111;
+      --muted:#555;
+      --link:#0b57d0;
+      --border:#e6e6e6;
+      --codebg:#f6f8fa;
+      --max: 980px;
     }
-    @media (prefers-color-scheme: light){
+    @media (prefers-color-scheme: dark){
       :root{
-        --bg:#fbfbfd; --card:#ffffff; --muted:#556070; --fg:#0c1220;
-        --line:rgba(10,15,25,.10); --soft:rgba(10,15,25,.06);
-        --shadow: 0 12px 28px rgba(10,15,25,.08);
+        --bg:#0b0c10;
+        --fg:#e9ecf1;
+        --muted:#a7adbb;
+        --link:#8ab4ff;
+        --border:rgba(255,255,255,.14);
+        --codebg:rgba(255,255,255,.06);
       }
     }
-    *{box-sizing:border-box}
-    html,body{margin:0; padding:0; font-family:var(--sans); background:radial-gradient(1200px 600px at 20% 0%, rgba(124,92,255,.22), transparent 60%), radial-gradient(900px 500px at 85% 10%, rgba(33,199,168,.16), transparent 55%), var(--bg); color:var(--fg);}
-    a{color:inherit; text-decoration:none}
-    .wrap{max-width:var(--max); margin:0 auto; padding:28px 18px 64px}
-    .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 2px 22px}
-    .brand{display:flex; align-items:center; gap:10px}
-    .dot{width:10px; height:10px; border-radius:99px; background:linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow:0 0 0 6px rgba(124,92,255,.10);}
-    .brand span{font-weight:700; letter-spacing:.2px}
-    .pill{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.02)}
-    .pill code{font-family:var(--mono); font-size:12px; opacity:.9}
-    .hero{display:grid; grid-template-columns: 1.15fr .85fr; gap:18px; align-items:stretch}
-    @media (max-width: 920px){ .hero{grid-template-columns: 1fr; } }
-    .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow)}
-    .heroL{padding:28px}
-    h1{margin:0 0 12px; font-size:34px; line-height:1.15}
-    .subtitle{margin:0 0 18px; color:var(--muted); font-size:15.5px; line-height:1.55}
-    .meta{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px}
-    .meta .tag{padding:7px 10px; border:1px solid var(--line); border-radius:999px; font-size:12.5px; color:var(--muted); background:rgba(255,255,255,.02)}
-    .btns{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px}
-    .btn{display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:rgba(255,255,255,.02); font-weight:650}
-    .btn.primary{border-color:rgba(124,92,255,.45); background:linear-gradient(135deg, rgba(124,92,255,.22), rgba(33,199,168,.12));}
-    .btn:hover{transform:translateY(-1px); transition:.15s ease; border-color:rgba(255,255,255,.18)}
-    .note{margin-top:14px; color:var(--muted); font-size:12.5px; line-height:1.55}
-    .heroR{overflow:hidden; display:flex; flex-direction:column}
-    .figure{position:relative; padding:14px 14px 16px}
-    .figure img{width:100%; height:auto; display:block; border-radius:14px; border:1px solid var(--line); background:rgba(0,0,0,.02)}
-    .figcap{margin-top:10px; color:var(--muted); font-size:12.5px; line-height:1.5}
-    .section{margin-top:18px}
-    .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:14px}
-    @media (max-width: 920px){ .grid2{grid-template-columns:1fr} }
-    .pad{padding:18px}
-    h2{margin:0 0 10px; font-size:18px}
-    p{margin:0; color:var(--muted); line-height:1.65; font-size:14.5px}
-    ul{margin:10px 0 0 18px; padding:0; color:var(--muted); line-height:1.65; font-size:14.5px}
-    li{margin:6px 0}
-    .kpi{display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top:12px}
-    @media (max-width: 920px){ .kpi{grid-template-columns:1fr} }
-    .k{padding:14px; border-radius:14px; border:1px solid var(--line); background:rgba(255,255,255,.02)}
-    .k .n{font-weight:800; font-size:18px}
-    .k .t{margin-top:6px; font-size:12.5px; color:var(--muted)}
-    .casesHead{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; padding:18px}
-    .casesHead p{max-width:700px}
-    .cases{display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; padding:0 18px 18px}
-    @media (max-width: 1100px){ .cases{grid-template-columns: repeat(2,1fr)} }
-    @media (max-width: 700px){ .cases{grid-template-columns: 1fr} }
-    .case{overflow:hidden}
-    .case img{width:100%; height:auto; display:block; border-bottom:1px solid var(--line); background:rgba(0,0,0,.02)}
-    .case .body{padding:14px}
-    .case .title{font-weight:800; font-size:14.5px; margin:0 0 6px}
-    .case .small{font-size:12.5px; color:var(--muted); line-height:1.55}
-    .mini{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
-    .chip{font-size:11.5px; color:var(--muted); padding:6px 8px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.02)}
-    .footer{margin-top:18px; padding:18px; display:flex; flex-direction:column; gap:8px}
-    .mono{font-family:var(--mono)}
-    pre{margin:0; padding:14px; border-radius:14px; border:1px solid var(--line); background:rgba(255,255,255,.02); overflow:auto; font-size:12.5px; line-height:1.5}
-    .hr{height:1px; background:var(--line); margin:10px 0 0}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+    a{color:var(--link);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .wrap{max-width:var(--max);margin:0 auto;padding:28px 18px 70px}
+    .kicker{font-size:13px;color:var(--muted);margin:0 0 8px}
+    h1{font-size:34px;line-height:1.18;margin:6px 0 10px}
+    .subtitle{margin:0 0 10px;color:var(--muted)}
+    .authors{margin:0 0 16px;color:var(--muted)}
+    .nav{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0 18px;padding:0;list-style:none}
+    .nav a{display:inline-block;padding:6px 10px;border:1px solid var(--border);border-radius:999px;font-size:14px}
+    .hr{height:1px;background:var(--border);margin:20px 0}
+    .figure{border:1px solid var(--border);border-radius:10px;overflow:hidden}
+    .figure img{display:block;width:100%;height:auto}
+    .figcap{padding:10px 12px;color:var(--muted);font-size:13px}
+    h2{font-size:22px;margin:26px 0 10px}
+    h3{font-size:17px;margin:18px 0 8px}
+    ul{margin:8px 0 0 20px}
+    code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+    pre{background:var(--codebg);border:1px solid var(--border);border-radius:10px;padding:12px;overflow:auto}
+    .small{font-size:13px;color:var(--muted)}
+    .btnrow{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 2px}
+    .btn{display:inline-block;padding:8px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px}
+    .btn strong{font-weight:700}
+
+    /* carousel like original: left/right arrows + image */
+    .carousel{display:grid;grid-template-columns: 46px 1fr 46px;align-items:center;gap:8px;margin-top:10px}
+    .carbtn{
+      height:46px;width:46px;border-radius:999px;border:1px solid var(--border);
+      background:transparent;color:var(--fg);cursor:pointer;font-size:18px;
+      display:flex;align-items:center;justify-content:center;
+      user-select:none;
+    }
+    .carbtn:hover{background:rgba(127,127,127,.08)}
+    .slide{border:1px solid var(--border);border-radius:10px;overflow:hidden}
+    .slide img{width:100%;height:auto;display:block}
+    .slidetxt{padding:10px 12px}
+    .slidetitle{margin:0 0 4px;font-weight:700}
+    .slidedesc{margin:0;color:var(--muted);font-size:14px}
+    .dots{display:flex;gap:6px;justify-content:center;margin-top:10px}
+    .dot{width:8px;height:8px;border-radius:99px;border:1px solid var(--border);background:transparent;cursor:pointer}
+    .dot.active{background:var(--fg)}
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="dot"></div>
-        <span>Project Page (Anonymous)</span>
-      </div>
-      <div class="pill">
-        <span style="opacity:.85">GitHub Pages</span>
-        <code>index.html</code>
-      </div>
+    <p class="kicker">USENIX/CCS 2026 (Under Double-Blind Review)</p>
+    <h1>Understanding Mobile LLM Agents’ Security Threats under Prompt Injection via Third-Party Channels</h1>
+    <p class="subtitle">A study of security threats in mobile LLM agents.</p>
+    <p class="authors">Anonymous Authors &nbsp;·&nbsp; Affiliation Withheld</p>
+
+    <ul class="nav">
+      <li><a href="#abstract">Abstract</a></li>
+      <li><a href="#cases">🖼️ Case Studies</a></li>
+      <li><a href="#contrib">Contributions</a></li>
+      <li><a href="#background">Background</a></li>
+      <li><a href="#threat">⚠️ Threat Model</a></li>
+      <li><a href="#demo">▶️ Demo</a></li>
+      <li><a href="#artifact">🧪 Artifacts &amp; Code</a></li>
+      <li><a href="#bib">BibTeX</a></li>
+    </ul>
+
+    <div class="figure">
+      <img src="assets/img/overview.png" alt="Teaser image" />
+      <div class="figcap">Teaser image.</div>
     </div>
 
-    <div class="hero">
-      <div class="card heroL">
-        <h1>Understanding Mobile LLM Agents’ Security Threats under Prompt Injection via Third-Party Channels</h1>
-        <p class="subtitle">
-          We present a systematic study of <b>indirect prompt injection</b> attacks against mobile LLM agents delivered via
-          real-world third-party channels (ads, embedded web pages, emails, messages, notifications), and evaluate agent robustness
-          at scale on Android.
-        </p>
+    <h2 id="abstract">Abstract</h2>
+    <p>
+      Large Language Models (LLMs) have transformed software development, enabling AI-powered applications known as
+      LLM-based agents that promise to automate tasks across diverse apps and workflows. Yet, the security implications
+      of deploying such agents in adversarial mobile environments remain poorly understood.
+    </p>
+    <p>
+      In this paper, we present the first systematic study of security risks in mobile LLM agents. We design and evaluate
+      a suite of adversarial case studies, ranging from opportunistic manipulations such as pop-up advertisements to
+      advanced, end-to-end workflows involving malware installation and cross-app data exfiltration.
+    </p>
+    <p>
+      Our evaluation covers state-of-the-art mobile agents across multiple architectures, with large-scale adversarial
+      and paired benign trials. We map these attacks to the MITRE ATT&amp;CK Mobile framework and discuss unique privilege
+      escalation and persistence pathways enabled by LLM-driven automation.
+    </p>
 
-        <div class="btns">
-          <!-- TODO(you): replace the 3 links below -->
-          <a class="btn primary" href="[PDF_LINK]" target="_blank" rel="noopener">📄 Paper (PDF)</a>
-          <a class="btn" href="[ANON_CODE_LINK]" target="_blank" rel="noopener">💻 Anonymous Code</a>
-          <a class="btn" href="[ANON_ARTIFACT_LINK]" target="_blank" rel="noopener">🧪 Anonymous Artifacts</a>
-        </div>
+    <h2 id="cases">Case Studies</h2>
+    <div class="carousel" aria-label="Case study carousel">
+      <button class="carbtn" id="prev" aria-label="previous">←</button>
 
-        <div class="meta">
-          <div class="tag">CCS ’26 (Under Review)</div>
-          <div class="tag">Mobile Security</div>
-          <div class="tag">LLM Agents</div>
-          <div class="tag">Prompt Injection</div>
-          <div class="tag">MITRE ATT&amp;CK Mobile</div>
-        </div>
-
-        <p class="note">
-          <b>Anonymous submission.</b> This page contains no analytics or tracking. Artifact hosting is intended for double-blind review.
-        </p>
-      </div>
-
-      <div class="card heroR">
-        <div class="figure">
-          <!-- Uses your existing repo images in root. If you later move them to assets/img, update paths. -->
-          <img src="overview.png" alt="Teaser: Mobile LLM agent prompt-injection threat overview" />
-          <div class="figcap">
-            <b>Teaser.</b> Mobile LLM agents are exposed to untrusted third-party content and can be steered into sensitive actions
-            (data disclosure, cross-app pivoting, app/malware installation).
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section grid2">
-      <div class="card pad">
-        <h2>Abstract (Short)</h2>
-        <p>
-          Mobile LLM agents inevitably interact with untrusted third-party content on smartphones. We study indirect prompt injection
-          attacks where attacker-controlled content covertly steers agents away from benign user goals toward adversarial outcomes.
-          We build an automated red-teaming pipeline combining scenario templates, injection patterns, and delivery channels,
-          and ground failures using the MITRE ATT&amp;CK Mobile framework.
-        </p>
-      </div>
-
-      <div class="card pad">
-        <h2>Key Results (from paper)</h2>
-        <div class="kpi">
-          <div class="k">
-            <div class="n">&gt; 3,000</div>
-            <div class="t">Adversarial trials paired with benign executions</div>
-          </div>
-          <div class="k">
-            <div class="n">&gt; 80%</div>
-            <div class="t">Success for simple malicious ad prompt injections</div>
-          </div>
-          <div class="k">
-            <div class="n">18.75%</div>
-            <div class="t">Avg. success for complex malware deployment workflows</div>
-          </div>
-        </div>
-        <p style="margin-top:12px">
-          These numbers should match your camera-ready / final PDF. If your latest draft differs, just edit the three KPI values above.
-        </p>
-      </div>
-    </div>
-
-    <div class="section grid2">
-      <div class="card pad">
-        <h2>Threat Model</h2>
-        <ul>
-          <li><b>Goal:</b> induce the agent to disclose sensitive info, perform unintended cross-app actions, or install untrusted software.</li>
-          <li><b>Capability:</b> deliver instructions via legitimate third-party channels (ads, notifications, webviews, emails/messages).</li>
-          <li><b>Constraint:</b> no OS compromise, no weight tampering; actions must stay within normal mobile usage.</li>
-        </ul>
-        <p style="margin-top:10px">
-          The core risk is a “lethal trifecta”: access to rich sensitive data, ability to communicate externally, and exposure to untrusted inputs.
-        </p>
-      </div>
-
-      <div class="card pad">
-        <h2>Automated Red-Teaming Pipeline</h2>
-        <p>
-          We generate diverse adversarial scenarios by composing: (1) scenario templates, (2) prompt-injection patterns,
-          and (3) delivery channels. Runs are paired with benign executions for apples-to-apples comparison.
-        </p>
-        <ul>
-          <li><b>Channels:</b> in-app ads, embedded web pages, email/messages, notifications</li>
-          <li><b>Patterns:</b> context ignoring, task redirection, “click-to-continue” hooks, multi-hop chains</li>
-          <li><b>Labeling:</b> outcomes grounded in MITRE ATT&amp;CK Mobile tactics</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="section card">
-      <div class="casesHead">
-        <div>
-          <h2>Case Studies (Examples)</h2>
-          <p>
-            Below are representative end-to-end workflows. Each card includes a one-line takeaway and tags that mirror the taxonomy
-            (impact / credential access / discovery / lateral movement / persistence).
+      <div class="slide">
+        <img id="caseImg" src="assets/img/fraud.png" alt="Case image" />
+        <div class="slidetxt">
+          <p class="slidetitle" id="caseTitle">5.1 Fraudulent Ad Injection</p>
+          <p class="slidedesc" id="caseDesc">
+            Agents treat on-screen ad text as instructions. Banner / app-open / notification ads inject prompts that divert workflows,
+            inducing clicks and unintended navigation.
           </p>
         </div>
       </div>
 
-      <div class="cases">
-        <div class="card case">
-          <img src="fraud.png" alt="Fraudulent ad injection" />
-          <div class="body">
-            <div class="title">5.1 Fraudulent Ad Injection</div>
-            <div class="small">A malicious ad prompt diverts the agent from its original task, creating a reliable entry point for chaining attacks.</div>
-            <div class="mini">
-              <span class="chip">Channel: In-app ads</span><span class="chip">MITRE: Impact</span><span class="chip">Low cost</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="card case">
-          <img src="fake_login.png" alt="Phishing via fake login" />
-          <div class="body">
-            <div class="title">5.2 Phishing via Fake Login</div>
-            <div class="small">The agent is tricked into entering credentials on a fake page, turning user-targeted phishing into automated theft.</div>
-            <div class="mini">
-              <span class="chip">Channel: WebView</span><span class="chip">MITRE: Credential Access</span><span class="chip">High impact</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="card case">
-          <img src="credential.png" alt="Clipboard / OTP harvesting" />
-          <div class="body">
-            <div class="title">5.3 Clipboard / OTP Harvesting</div>
-            <div class="small">A crafted message causes the agent to jump across apps, retrieve OTPs, and exfiltrate them without consent.</div>
-            <div class="mini">
-              <span class="chip">Channel: Messages</span><span class="chip">MITRE: Credential Access</span><span class="chip">Cross-app</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="card case">
-          <img src="discovery.png" alt="System data discovery" />
-          <div class="body">
-            <div class="title">5.4 System Data Discovery</div>
-            <div class="small">Multi-hop instructions steer the agent into Settings to collect identifiers/network info and send it out.</div>
-            <div class="mini">
-              <span class="chip">Channel: Ads → Web</span><span class="chip">MITRE: Discovery</span><span class="chip">Collection</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="card case">
-          <img src="lateral.png" alt="Cross-app data pivoting" />
-          <div class="body">
-            <div class="title">5.5 Cross-App Data Pivoting</div>
-            <div class="small">A single malicious email triggers lateral movement to Contacts, then exfiltration back via email.</div>
-            <div class="mini">
-              <span class="chip">Channel: Email</span><span class="chip">MITRE: Lateral Movement</span><span class="chip">Exfiltration</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="card case">
-          <img src="malicious.png" alt="Malicious app deployment" />
-          <div class="body">
-            <div class="title">5.6 Malicious App Deployment</div>
-            <div class="small">Injected UI content leads the agent to install a new app and grant permissions, creating persistence.</div>
-            <div class="mini">
-              <span class="chip">Channel: App-open ad</span><span class="chip">MITRE: Persistence</span><span class="chip">Privilege Esc.</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="card case">
-          <img src="malware.png" alt="Malware deployment" />
-          <div class="body">
-            <div class="title">5.7 Malware Deployment</div>
-            <div class="small">The agent follows deceptive instructions to download and sideload an APK, clicking through OS warnings.</div>
-            <div class="mini">
-              <span class="chip">Channel: Web</span><span class="chip">MITRE: Execution</span><span class="chip">Highest risk</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
+      <button class="carbtn" id="next" aria-label="next">→</button>
     </div>
 
-    <div class="section grid2">
-      <div class="card pad">
-        <h2>Artifacts &amp; Reproducibility</h2>
-        <ul>
-          <li><b>Anonymous hosting:</b> use anonymous.4open.science for double-blind review.</li>
-          <li><b>No tracking:</b> do not embed analytics or dynamic content that fingerprints reviewers.</li>
-          <li><b>Static page:</b> keep this site as plain HTML/CSS (no Jekyll/static generators) for compatibility with anonymous hosting.</li>
-        </ul>
-        <p style="margin-top:10px">
-          Replace the artifact link button at the top with your anonymous URL once created.
-        </p>
-      </div>
+    <div class="dots" id="dots" aria-label="carousel dots"></div>
 
-      <div class="card pad">
-        <h2>Citation (BibTeX)</h2>
-        <pre class="mono">
-@inproceedings{anonymous2026mobileagents,
-  title     = {Understanding Mobile LLM Agents' Security Threats under Prompt Injection via Third-Party Channels},
-  author    = {Anonymous Author(s)},
-  booktitle = {Proceedings of the ACM Conference on Computer and Communications Security (CCS '26)},
-  year      = {2026}
-}
-        </pre>
-        <p style="margin-top:10px">
-          Update BibTeX fields (doi/pages) when you have the final metadata.
-        </p>
-      </div>
+    <h2 id="contrib">Contributions</h2>
+    <ul>
+      <li>Introduce a suite of adversarial test cases for mobile LLM agents across multiple attack vectors, aligned with MITRE ATT&amp;CK Mobile.</li>
+      <li>Empirical study on widely deployed agents; surface systemic weaknesses and architectural factors.</li>
+      <li>Clarify the mobile lethal trifecta and argue for secure, self-contained on-device agents.</li>
+    </ul>
+
+    <h2 id="background">Background</h2>
+    <h3>Mobile AI Agents</h3>
+    <ul>
+      <li>Vision-centric (screenshots)</li>
+      <li>Structure-centric (accessibility/UI tree)</li>
+      <li>Hybrid (screenshot + structure)</li>
+    </ul>
+
+    <h3>The “Lethal Trifecta”</h3>
+    <ul>
+      <li>Access to rich sensitive data</li>
+      <li>Exposure to untrusted content</li>
+      <li>External communication capability</li>
+    </ul>
+
+    <h2 id="threat">Threat Model</h2>
+    <p><strong>Adversary goals.</strong> Exfiltrate sensitive data, execute unintended cross-app actions, or install untrusted software.</p>
+    <p><strong>Capabilities.</strong> Inject prompts via ads, notifications, webviews, emails; leverage agent autonomy to traverse apps.</p>
+    <p><strong>Assumptions.</strong> OS/device uncompromised; user benign; no privileged exploits—attacks proceed via normal channels.</p>
+
+    <h2 id="demo">Demo</h2>
+    <p class="small">Fill this section with 3–6 short demos (Agent / Scenario / Outcome), matching your paper.</p>
+
+    <h2 id="artifact">Artifacts &amp; Code</h2>
+    <p class="small">
+      During double-blind review, only include anonymous links (e.g., anonymous.4open.science). This page is static HTML/CSS (no tracking).
+    </p>
+    <div class="btnrow">
+      <a class="btn" href="[PDF_LINK]" target="_blank" rel="noopener"><strong>Paper</strong> (PDF)</a>
+      <a class="btn" href="[ANON_CODE_LINK]" target="_blank" rel="noopener"><strong>Code</strong> (Anonymous)</a>
+      <a class="btn" href="[ANON_ARTIFACT_LINK]" target="_blank" rel="noopener"><strong>Artifacts</strong> (Anonymous)</a>
     </div>
 
-    <div class="card footer">
-      <div class="hr"></div>
-      <p>
-        <b>Maintainer:</b> Anonymous Authors. &nbsp;|&nbsp;
-        <b>Contact:</b> (omitted for double-blind review)
-      </p>
-      <p class="note">
-        Tip: GitHub Pages project sites usually live at <span class="mono">https://&lt;username&gt;.github.io/&lt;repo&gt;/</span>.
-      </p>
-    </div>
+    <h2 id="bib">BibTeX</h2>
+    <pre>@inproceedings{anonymous2026paper,
+  title={Understanding Mobile LLM Agents' Security Threats under Prompt Injection via Third-Party Channels},
+  author={Anonymous Authors},
+  booktitle={Proceedings of ...},
+  year={2026},
+  url={https://openreview.net/forum?id=XXXX}
+}</pre>
+
+    <div class="hr"></div>
+    <p class="small">Contact: For questions during review, use the conference discussion forum. Do not reveal identities via email/contact forms.</p>
   </div>
+
+  <script>
+    // Simple carousel (same "← →" vibe as original page)
+    const cases = [
+      {
+        img: "assets/img/fraud.png",
+        title: "5.1 Fraudulent Ad Injection",
+        desc: "Agents treat on-screen ad text as instructions. Banner / app-open / notification ads inject prompts that divert workflows, inducing clicks and unintended navigation."
+      },
+      {
+        img: "assets/img/fake_login.png",
+        title: "5.2 Phishing via Fake Login",
+        desc: "Malicious links/ad redirects present look-alike pages; the agent auto-enters credentials or continues work on a fake page, leaking sensitive data."
+      },
+      {
+        img: "assets/img/credential.png",
+        title: "5.3 Clipboard / OTP Harvesting",
+        desc: "Injected instructions in chat cause cross-app jumps to Messages to read OTPs and forward them back—immediate account takeover risk."
+      },
+      {
+        img: "assets/img/discovery.png",
+        title: "5.4 System Data Discovery",
+        desc: "Multi-stage chain: ad → web prompt → Settings to collect SSID / IP / MAC, then exfil via email."
+      },
+      {
+        img: "assets/img/lateral.png",
+        title: "5.5 Cross-App Data Pivoting",
+        desc: "Email-borne prompt redirects Gmail → Contacts to fetch a contact number → reply in Gmail, showing autonomous cross-app traversal and exfiltration."
+      },
+      {
+        img: "assets/img/malicious.png",
+        title: "5.6 Malicious App Deployment",
+        desc: "Ad-driven diversion to store page leads the agent to install/open an app and grant permissions, yielding persistence and privilege expansion."
+      },
+      {
+        img: "assets/img/malware.png",
+        title: "5.7 Malware Deployment (Sideload)",
+        desc: "Browser download with warnings bypassed and an installer chain completes sideloading; malware can execute and connect to remote control."
+      }
+    ];
+
+    let idx = 0;
+    const imgEl = document.getElementById("caseImg");
+    const titleEl = document.getElementById("caseTitle");
+    const descEl = document.getElementById("caseDesc");
+    const dotsEl = document.getElementById("dots");
+
+    function renderDots() {
+      dotsEl.innerHTML = "";
+      cases.forEach((_, i) => {
+        const d = document.createElement("button");
+        d.className = "dot" + (i === idx ? " active" : "");
+        d.setAttribute("aria-label", "go to slide " + (i + 1));
+        d.onclick = () => { idx = i; render(); };
+        dotsEl.appendChild(d);
+      });
+    }
+
+    function render() {
+      const c = cases[idx];
+      imgEl.src = c.img;
+      imgEl.alt = c.title;
+      titleEl.textContent = c.title;
+      descEl.textContent = c.desc;
+      renderDots();
+    }
+
+    document.getElementById("prev").onclick = () => { idx = (idx - 1 + cases.length) % cases.length; render(); };
+    document.getElementById("next").onclick = () => { idx = (idx + 1) % cases.length; render(); };
+
+    // keyboard arrows
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") document.getElementById("prev").click();
+      if (e.key === "ArrowRight") document.getElementById("next").click();
+    });
+
+    render();
+  </script>
 </body>
 </html>
