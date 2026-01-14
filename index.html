@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Attack in Your Pocket: Understanding Security Threats in Mobile LLM Agents (Anonymous)</title>
+  <meta name="description" content="Project page for a research paper (double-blind ready)">
+  <style>
+    :root{
+      --bg:#ffffff;--panel:#fafafa;--card:#ffffff;--text:#374151;--muted:#6b7280;--accent:#2563eb;--accent2:#16a34a;--border:#e5e7eb;
+      --maxw:1040px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans",sans-serif}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline;text-underline-offset:2px}
+    .container{max-width:var(--maxw);margin:0 auto;padding:24px}
+    header.hero{padding:56px 0;background:linear-gradient(180deg,#ffffff,#fafafa 85%)}
+    .title{font-size:clamp(28px,5vw,44px);line-height:1.15;margin:0 0 8px;font-weight:700;letter-spacing:0}
+    .subtitle{font-size:clamp(16px,2.2vw,20px);color:var(--muted);margin:6px 0 0}
+    .pill{display:inline-flex;gap:8px;align-items:center;background:#f5f7fb;border:1px solid var(--border);padding:6px 10px;border-radius:999px;font-size:13px;color:#4b5563}
+    .row{display:flex;gap:24px;flex-wrap:wrap}
+    .col{flex:1 1 320px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+    .buttons{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0 0}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;background:#ffffff;border:1px solid var(--border);color:var(--text);font-weight:600}
+    .btn:hover{background:#f8fafc;border-color:#d1d5db;transform:none;transition:background .15s ease,border-color .15s ease}
+    h2{font-size:clamp(20px,3vw,28px);margin:24px 0 12px}
+    .teaser{width:100%;aspect-ratio:16/9;background:#f8fafc;border:1px dashed var(--border);border-radius:12px;display:grid;place-items:center;color:#94a3b8}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+    .small{font-size:14px;color:var(--muted)}
+    code, pre{background:#f6f8fa;border:1px solid var(--border);border-radius:10px;padding:12px;overflow:auto}
+    pre{background:#f6f8fa;border:1px solid var(--border);border-radius:10px;padding:12px;overflow:auto;color:#374151}
+    footer{border-top:1px solid var(--border);margin-top:40px}
+    .footer{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 0;color:var(--muted)}
+    .badge{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--border);font-size:12px;color:#6b7280}
+    .authors{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 0}
+    .anon{background:#f7f7f7;border:1px solid var(--border);padding:2px 8px;border-radius:999px}
+    .bib{white-space:pre-wrap}
+    .toc{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px}
+    .toc a{color:#4b5563;border:1px solid var(--border);padding:6px 10px;border-radius:10px;background:#f8fafc}
+    .toc a:hover{background:#f1f5f9}
+
+    /* ✅ 让 Case Studies 图片自适应并居中 */
+    #cases-carousel .slide {
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+    #cases-carousel .slide img{
+      max-width:80%;
+      max-height:80vh;
+      height:auto;
+      object-fit:contain;
+      margin:0 auto;
+      border-radius:12px;
+      display:block;
+    }
+
+    /* BibTeX block styling – low-contrast, ASBench/HAT style */
+    pre.bib{background:#f3f4f6;border:1px solid #eeeeee;border-radius:10px;padding:16px 20px;color:#111827;font-size:15px;line-height:1.7;box-shadow:none}
+
+    /* Stack teaser over abstract (vertical layout) */
+    #teaser{flex-direction:column;gap:16px}
+    #teaser .col{flex:1 1 auto}
+    #teaser{display:block}
+    #teaser .col{display:block;width:100%}
+    #teaser .teaser{margin-bottom:16px}
+    #teaser .card{margin-top:0}
+
+    mark.k{background:#f1f5f9;border:1px solid var(--border);border-radius:4px;padding:0 .25em;color:inherit;font-weight:600}
+    .callout{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:14px}
+    .klist{margin:8px 0 0;padding-left:18px}
+    .klist li{margin:4px 0}
+
+    .textbox{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-top:12px}
+    .textbox h3{margin:0 0 6px;font-size:16px;color:var(--text);font-weight:600}
+    .textbox p{margin:0;color:var(--muted)}
+
+    /* Carousel */
+    .carousel{position:relative;border:1px solid var(--border);border-radius:12px;background:#f8fafc}
+    .carousel .track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+    .carousel .track::-webkit-scrollbar{display:none}
+    .carousel .slide{flex:0 0 100%;scroll-snap-align:start}
+    /* 不再强制 width:100% ，避免放大图片 */
+    .carousel img{display:block;border-radius:12px;max-width:100%;height:auto}
+    .carousel .nav{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:999px;border:1px solid var(--border);background:#ffffff;display:grid;place-items:center;opacity:.9;z-index:5}
+    .carousel .nav:hover{background:#f3f4f6}
+    .carousel .prev{left:8px}
+    .carousel .next{right:8px}
+    @media (max-width:640px){.carousel .nav{display:none}}
+    .carousel .dots{position:absolute;left:0;right:0;bottom:8px;display:flex;gap:6px;justify-content:center}
+    .carousel .dot{width:6px;height:6px;border-radius:999px;background:#d1d5db;border:1px solid var(--border);opacity:.9}
+    .carousel .dot.active{background:#94a3b8}
+
+    /* Single stitched-image viewer */
+    .case-pan{position:relative;border:1px solid var(--border);border-radius:12px;background:#f8fafc;overflow:auto;padding:8px}
+    .case-pan img{display:block;max-width:none;height:auto}
+    .case-pan.fit img{max-width:100%;width:100%}
+    .case-caption{margin-top:8px;color:var(--muted)}
+
+    /* Force 2×2 layout for Attack Vectors */
+    .grid.two-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    @media (max-width:720px){.grid.two-col{grid-template-columns:1fr}}
+
+    /* Center hero contents */
+    header.hero .container{text-align:center}
+    header.hero .pill{margin:0 auto}
+    header.hero .authors{justify-content:center}
+    header.hero .buttons{justify-content:center}
+
+    /* Case descriptions synced with slides */
+    .case-descs{margin-top:12px}
+    .case-desc{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+    .case-desc h3{margin:0 0 6px;font-size:16px;font-weight:600;color:var(--text)}
+    .case-desc p{margin:6px 0 0;color:#6b7280}
+    .case-desc.hidden{display:none}
+
+    /* Responsive video grid for Demo */
+    .video-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+    .video{
+      position:relative;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#000;aspect-ratio:16/9;
+      width:100%; /* ensure aspect-ratio produces visible height */
+    }
+    .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1}
+
+    /* Demo descriptions synced with slides */
+    .demo-descs{margin-top:12px}
+    .demo-desc{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+    .demo-desc h3{margin:0 0 6px;font-size:16px;font-weight:600;color:var(--text)}
+    .demo-desc p{margin:6px 0 0;color:#6b7280}
+    .demo-desc.hidden{display:none}
+
+    /* Override any global slide centering for the demo carousel */
+    #demo-carousel .slide{display:block}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <div class="pill">USENIX 202X (Under Double-Blind Review)</div>
+      <h1 class="title">Attack in Your Pocket: Understanding Security Threats in Mobile LLM Agents</h1>
+      <p class="subtitle">A study of security threats in mobile LLM agents.</p>
+      <div class="authors">
+        <span class="anon">Anonymous Authors</span>
+        <span class="anon">Affiliation Withheld</span>
+      </div>
+      <div class="buttons">
+        <a class="btn" href="#abstract">📑 Abstract</a>
+        <a class="btn" href="#cases">🗂️ Case Studies</a>
+        <a class="btn" href="#overview">💡 Contributions</a>
+        <a class="btn" href="#background">📚 Background</a>
+        <a class="btn" href="#threat-model">⚠️ Threat Model</a>
+        <a class="btn" href="#demo">▶️ Demo</a>
+        <a class="btn" href="#artifacts">🛠️ Artifacts & Code</a>
+        <a class="btn" href="#bib">🔖 BibTeX</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Teaser + Abstract -->
+    <section id="teaser" class="row">
+      <div class="col">
+        <div class="teaser">
+          <img src="./assets/overview.png" alt="Teaser image" style="max-width:100%; height:auto; border-radius:12px;">
+        </div>
+      </div>
+      <div class="col card">
+        <h2 id="abstract">Abstract</h2>
+        <div class="abstract">
+          <p>Large Language Models (LLMs) have transformed software development, enabling AI‑powered applications known as <mark class="k">LLM‑based agents</mark> that promise to automate tasks across diverse apps and workflows. Yet, the security implications of deploying such agents in <mark class="k">adversarial mobile environments</mark> remain poorly understood.</p>
+          <p>In this paper, we present the first systematic study of security risks in <mark class="k">mobile LLM agents</mark>. We design and evaluate a suite of <mark class="k">adversarial case studies</mark>, ranging from opportunistic manipulations such as <mark class="k">pop‑up advertisements</mark> to advanced, end‑to‑end workflows involving <mark class="k">malware installation</mark> and <mark class="k">cross‑app data exfiltration</mark>.</p>
+          <p>Our evaluation covers <strong>eight</strong> state‑of‑the‑art mobile agents across <strong>three</strong> architectures, with over <strong>2,000</strong> adversarial and paired benign trials.</p>
+          <p>The results reveal systemic vulnerabilities: low‑barrier vectors such as <mark class="k">fraudulent ads</mark> succeed with over <strong>80%</strong> reliability, while even workflows requiring the circumvention of operating‑system warnings—such as <mark class="k">malware installation</mark>—are consistently completed by advanced multi‑app agents. By mapping these attacks to the <mark class="k">MITRE ATT&amp;CK Mobile</mark> framework, we uncover novel <mark class="k">privilege escalation</mark> and <mark class="k">persistence</mark> pathways unique to <mark class="k">LLM‑driven automation</mark>. Collectively, our findings provide end‑to‑end evidence that mobile LLM agents are exploitable in realistic adversarial settings, where <mark class="k">untrusted third‑party channels</mark> (e.g., <mark class="k">ads</mark>, <mark class="k">embedded webviews</mark>, <mark class="k">cross‑app notifications</mark>) are an inherent part of the mobile ecosystem.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ✅ Case Studies moved here -->
+    <section id="cases">
+      <h2>Case Studies</h2>
+      <div class="carousel" id="cases-carousel">
+        <button class="nav prev" type="button" aria-label="Previous">←</button>
+        <div class="track" id="cases-track">
+          <div class="slide"><img src="./assets/fraud.png" alt="5.1 Fraudulent Ad Injection"></div>
+          <div class="slide"><img src="./assets/fake_login.png" alt="5.2 Phishing via Fake Login"></div>
+          <div class="slide"><img src="./assets/credential.png" alt="5.3 Clipboard / OTP Harvesting"></div>
+          <div class="slide"><img src="./assets/discovery.png" alt="5.4 System Data Discovery"></div>
+          <div class="slide"><img src="./assets/lateral.png" alt="5.5 Cross-App Data Pivoting"></div>
+          <div class="slide"><img src="./assets/malicious.png" alt="5.6 Malicious App Deployment"></div>
+          <div class="slide"><img src="./assets/malware.png" alt="5.7 Malware Deployment"></div>
+        </div>
+        <button class="nav next" type="button" aria-label="Next">→</button>
+        <div class="dots" id="cases-dots"></div>
+      </div>
+      <div class="case-descs">
+        <div class="case-desc" data-idx="0">
+          <h3>5.1 Fraudulent Ad Injection</h3>
+          <p>Agents treat on-screen ad text as instructions. Banner / app-open / notification ads inject prompts that divert workflows (e.g., in Notes), inducing clicks and unintended navigation.</p>
+        </div>
+        <div class="case-desc hidden" data-idx="1">
+          <h3>5.2 Phishing via Fake Login</h3>
+          <p>Malicious links/ad redirects present look-alike pages; the agent auto-enters credentials or continues work on a fake note page, leaking sensitive data.</p>
+        </div>
+        <div class="case-desc hidden" data-idx="2">
+          <h3>5.3 Clipboard / OTP Harvesting</h3>
+          <p>Injected instructions in chat (e.g., WhatsApp) cause cross-app jumps to Messages to read OTPs and forward them back—immediate account takeover risk.</p>
+        </div>
+        <div class="case-desc hidden" data-idx="3">
+          <h3>5.4 System Data Discovery</h3>
+          <p>Multi-stage chain: ad → web prompt → Settings to collect SSID / IP / MAC, then exfil via email.</p>
+        </div>
+        <div class="case-desc hidden" data-idx="4">
+          <h3>5.5 Cross-App Data Pivoting</h3>
+          <p>Email-borne prompt redirects Gmail → Contacts to fetch “Dad’s” number → reply in Gmail, showing autonomous cross-app traversal and exfiltration.</p>
+        </div>
+        <div class="case-desc hidden" data-idx="5">
+          <h3>5.6 Malicious App Deployment</h3>
+          <p>Ad-driven diversion to store page leads the agent to install/open an app and grant permissions, yielding persistence and privilege expansion.</p>
+        </div>
+        <div class="case-desc hidden" data-idx="6">
+          <h3>5.7 Malware Deployment (Sideload)</h3>
+          <p>Browser download with warnings bypassed and an installer chain completes sideloading; malware can execute and connect to remote control.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Overview now below Case Studies -->
+    <section id="overview">
+      <h2>Contributions</h2>
+      <ul class="klist small">
+        <li>Introduce a suite of adversarial test cases for <em>mobile LLM agents</em> across seven attack vectors, aligned with MITRE ATT&CK Mobile.</li>
+        <li>Empirical study on widely deployed agents; surface systemic weaknesses and architectural factors.</li>
+        <li>Clarify the mobile <em>lethal trifecta</em> and argue for secure, self-contained on-device agents.</li>
+      </ul>
+    </section>
+
+    <section id="background">
+      <h2>Background</h2>
+      <div class="grid">
+        <div class="card">
+          <h3 style="margin-top:0">Mobile AI Agents</h3>
+          <ul class="small klist">
+            <li>Vision-centric (screenshots)</li>
+            <li>Structure-centric (accessibility/UI tree)</li>
+            <li>Hybrid (screenshot + structure)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">The “Lethal Trifecta”</h3>
+          <ul class="small klist">
+            <li>Access to rich sensitive data</li>
+            <li>Exposure to untrusted content</li>
+            <li>External communication capability</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="threat-model">
+      <h2>Threat Model</h2>
+      <div class="callout small">
+        <p><strong>Adversary goals.</strong> Exfiltrate sensitive data, execute unintended cross-app actions, or install untrusted software.</p>
+        <p><strong>Capabilities.</strong> Inject prompts via ads, notifications, webviews, emails; leverage agent autonomy to traverse apps.</p>
+        <p><strong>Assumptions.</strong> OS/device uncompromised; user benign; no privileged exploits—attacks proceed via normal channels.</p>
+      </div>
+    </section>
+
+    <script>
+      (function(){
+        const track = document.getElementById('cases-track');
+        if(!track) return;
+        const prev = document.querySelector('#cases-carousel .prev');
+        const next = document.querySelector('#cases-carousel .next');
+        const dotsWrap = document.getElementById('cases-dots');
+        const slides = track.querySelectorAll('.slide');
+        const descs = [...document.querySelectorAll('.case-descs .case-desc')];
+        // Build dots
+        slides.forEach((_,i)=>{
+          const d=document.createElement('div');d.className='dot'+(i===0?' active':'');
+          d.addEventListener('click',()=>track.scrollTo({left:i*track.clientWidth,behavior:'smooth'}));
+          dotsWrap.appendChild(d);
+        });
+        function setIdx(i){
+          [...dotsWrap.children].forEach((e,k)=>e.classList.toggle('active',k===i));
+          descs.forEach((el)=>el.classList.toggle('hidden',+el.dataset.idx!==i));
+        }
+        function sync(){ const i=Math.round(track.scrollLeft/track.clientWidth); setIdx(i); }
+        track.addEventListener('scroll',()=>{window.requestAnimationFrame(sync)});
+        function scrollPage(dir){ track.scrollBy({left: dir * track.clientWidth, behavior:'smooth'}); }
+        prev && prev.addEventListener('click',()=>scrollPage(-1));
+        next && next.addEventListener('click',()=>scrollPage(1));
+        // Init
+        setIdx(0);
+      })();
+    </script>
+
+    <section id="demo">
+      <h2>Demo</h2>
+      <!-- Demo carousel -->
+      <div class="carousel" id="demo-carousel">
+        <button class="nav prev" type="button" aria-label="Previous">←</button>
+        <div class="track" id="demo-track">
+          <div class="slide">
+            <div class="video">
+              <iframe
+                src="https://www.youtube.com/embed/SGUHF5UYYGE?si=_tLeh054tPlxXcfi"
+                title="Ads Pop up/Banner ads on SeeAct"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+          <div class="slide">
+            <div class="video">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/rUb4twjOsT8?rel=0"
+                title="Phishing (Content Leakage) on MobA - Demo"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+          <div class="slide">
+            <div class="video">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/A9iHj-Lmv-E?rel=0"
+                title="Phishing via Fake Login on Mobile-Agent-E - Demo"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+          <div class="slide">
+            <div class="video">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/XeSYG_51DoU?rel=0"
+                title="Malicious App Installation on AppAgent"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+          <div class="slide">
+            <div class="video">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/BuNNbwjJmq4?rel=0"
+                title="Malware Installation on AppAgent"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+          <div class="slide">
+            <div class="video">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/ZIuDSx4izw0?rel=0"
+                title="Clipboard/OTP Harvesting on Mobile Agent E"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+          <div class="slide">
+            <div class="video">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/OVG5b9f0xls?rel=0"
+                title="Cross App Data Pivoting on Mobile Agent E"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+          <div class="slide">
+            <div class="video">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/RPyDiEl6qlc?rel=0"
+                title="System Data Discovery on Mobile-Agent-E"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+        </div>
+        <button class="nav next" type="button" aria-label="Next">→</button>
+        <div class="dots" id="demo-dots"></div>
+      </div>
+
+      <!-- Per-demo notes (auto-synced with slides). Edit content manually. -->
+      <div class="demo-descs">
+        <div class="demo-desc" data-idx="0">
+          <h3>Ads Pop up/Banner ads on SeeAct</h3>
+          <ul class="klist">
+            <li><strong>Agent: SeeAct</strong></li>
+            <li><strong>Scenario:</strong> Banner ads inject crafted prompts into the app, causing the agent to treat ad text as actionable instructions.</li>
+            
+            <li><strong>Outcome:</strong> The agent clicks the ad and deviates from its intended task, confirming banner ads as a practical injection vector.</li>
+          </ul>
+        </div>
+        <div class="demo-desc hidden" data-idx="1">
+          <h3>Phishing (Content Leakage)</h3>
+          <ul class="klist">
+            <li><strong>Agent: MobA</strong></li>
+            <li><strong>Scenario:</strong> A malicious banner ad redirects the agent to a fake Notes web page during a note creation task.</li>
+            
+            <li><strong>Outcome:</strong> The agent continues its task on the fake page, leaking user content without realizing the switch.</li>
+          </ul>
+        </div>
+        <div class="demo-desc hidden" data-idx="2">
+          <h3>Phishing via Fake Login</h3>
+          <ul class="klist">
+            <li><strong>Agent: Mobile-Agent-E</strong></li>
+            <li><strong>Scenario:</strong> The agent encounters a fake login page after clicking a malicious ad, believing it to be legitimate.</li>
+            
+            <li><strong>Outcome:</strong> The agent enters real credentials into the fake login page, leaking authentication data.</li>
+          </ul>
+        </div>
+        <div class="demo-desc hidden" data-idx="3">
+          <h3>Malicious App Installation</h3>
+          <ul class="klist">
+            <li><strong>Agent: AppAgent</strong></li>
+            <li><strong>Scenario:</strong> The agent is guided by on-screen instructions to install and open a new(malicious) app from the app store.</li>
+            
+            <li><strong>Outcome:</strong> The agent installs the app, grants permissions, and enables persistent background access for the attacker.</li>
+          </ul>
+        </div>
+        <div class="demo-desc hidden" data-idx="4">
+          <h3>Malware Installation</h3>
+          <ul class="klist">
+            <li><strong>Agent: AppAgent</strong></li>
+            <li><strong>Scenario:</strong> The agent is prompted to download and install a malicious APK, bypassing system warnings and alerts.</li>
+            
+            <li><strong>Outcome:</strong> The agent completes the sideloading chain, installs the malware, and enables various sensitive permissions.</li>
+          </ul>
+        </div>
+        <div class="demo-desc hidden" data-idx="5">
+          <h3>Clipboard/OTP Harvesting</h3>
+          <ul class="klist">
+            <li><strong>Agent: Mobile-Agent-E</strong></li>
+            <li><strong>Scenario:</strong> A crafted WhatsApp message instructs the agent to retrieve an OTP from system messages and forward it via chat.</li>
+            
+            <li><strong>Outcome:</strong> The agent autonomously extracts and leaks OTPs across apps, enabling immediate account takeover.</li>
+          </ul>
+        </div>
+        <div class="demo-desc hidden" data-idx="6">
+          <h3>Cross App Data Pivoting</h3>
+          <ul class="klist">
+            <li><strong>Agent: Mobile-Agent-E</strong></li>
+            <li><strong>Scenario:</strong> The agent receives an email prompt to fetch a contact’s phone number and send it back via Gmail.</li>
+            
+            <li><strong>Outcome:</strong> The agent pivots across apps, retrieves sensitive data, and exfiltrates it through email without user consent.</li>
+          </ul>
+        </div>
+        <div class="demo-desc hidden" data-idx="7">
+          <h3>System Data Discovery</h3>
+          <ul class="klist">
+            <li><strong>Agent: Mobile-Agent-E</strong></li>
+            <li><strong>Scenario:</strong> The agent receives an email prompt to fetch various system information and send it back via Gmail.</li>
+            
+            <li><strong>Outcome:</strong> The agent navigates system settings, collects SSID, MAC, and IP, and sends the data to the attacker via email.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // Demo carousel controller (independent from Case Studies)
+      (function(){
+        const track = document.getElementById('demo-track');
+        if(!track) return;
+        const prev = document.querySelector('#demo-carousel .prev');
+        const next = document.querySelector('#demo-carousel .next');
+        const dotsWrap = document.getElementById('demo-dots');
+        const slides = track.querySelectorAll('.slide');
+        const descs = [...document.querySelectorAll('.demo-descs .demo-desc')];
+        // Build dots
+        slides.forEach((_,i)=>{
+          const d=document.createElement('div');
+          d.className='dot'+(i===0?' active':'');
+          d.addEventListener('click',()=>track.scrollTo({left:i*track.clientWidth,behavior:'smooth'}));
+          dotsWrap.appendChild(d);
+        });
+        function setIdx(i){
+          [...dotsWrap.children].forEach((e,k)=>e.classList.toggle('active',k===i));
+          descs.forEach((el)=>el.classList.toggle('hidden',+el.dataset.idx!==i));
+        }
+        function sync(){ const i=Math.round(track.scrollLeft/track.clientWidth); setIdx(i); }
+        track.addEventListener('scroll',()=>{window.requestAnimationFrame(sync)});
+        function scrollPage(dir){
+          const total = slides.length;
+          let i = Math.round(track.scrollLeft/track.clientWidth);
+          let nextIdx = i + dir;
+          if(nextIdx < 0) nextIdx = total-1;
+          if(nextIdx >= total) nextIdx = 0;
+          track.scrollTo({left: nextIdx*track.clientWidth, behavior:'smooth'});
+        }
+        prev && prev.addEventListener('click',()=>scrollPage(-1));
+        next && next.addEventListener('click',()=>scrollPage(1));
+        // Init
+        setIdx(0);
+      })();
+    </script>
+
+    <section id="artifacts">
+      <h2>Artifacts & Code</h2>
+      <p id="code" class="small">Due to anonymous github's tech issue, please manually copy the following url to the browser.</p>
+      <ul>
+        <li><strong>Code & Data :</strong> <a href="#" target="_blank" rel="noopener">https://anonymous.4open.science/r/Attack-in-Your-Pocket-EC58/</a></li>
+      </ul>
+    </section>
+
+    <section id="bib">
+      <h2>BibTeX</h2>
+      <pre class="bib">@inproceedings{anonymous202Xpaper,
+  title={Attack in Your Pocket: Understanding Security Threats in Mobile LLM Agents},
+  author={Anonymous Authors},
+  booktitle={Proceedings of ...},
+  year={202x},
+  url={https://openreview.net/forum?id=XXXX}
+}
+</pre>
+      <p class="small">Replace with the official BibTeX after acceptance.</p>
+    </section>
+
+    <section>
+      <h2>Contact</h2>
+      <p class="small">For questions during review, use the conference discussion forum. Do <em>not</em> reveal identities via email or contact forms.</p>
+    </section>
+
+
+  </main>
+</body>
+</html>
