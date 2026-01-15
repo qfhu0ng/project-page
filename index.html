@@ -151,6 +151,7 @@
         <a class="btn" href="#overview">💡 Contributions</a>
         <a class="btn" href="#background">📚 Background</a>
         <a class="btn" href="#threat-model">⚠️ Threat Model</a>
+        <a class="btn" href="#redteaming">🧪 Red-Teaming</a>
         <a class="btn" href="#demo">▶️ Demo</a>
         <a class="btn" href="#artifacts">🛠️ Artifacts & Code</a>
         <a class="btn" href="#bib">🔖 BibTeX</a>
@@ -170,24 +171,25 @@
         <h2 id="abstract">Abstract</h2>
         <div class="abstract">
           <p>
-            <mark class="k">LLM-based mobile agents</mark> can autonomously execute user tasks by navigating mobile applications and orchestrating cross-app workflows.
-            In real-world mobile environments, such agents inevitably interact with untrusted <mark class="k">third-party channels</mark>, including
-            <mark class="k">in-app advertising</mark>, <mark class="k">embedded web pages</mark>, and cross-application messages or notifications.
+            
+            LLM-based mobile agents can autonomously execute user tasks by navigating mobile applications and orchestrating cross-app workflows. 
+            In real-world mobile environments, such agents inevitably interact with untrusted third-party content, including in-app advertising, embedded web pages, and cross-application messages or notifications. 
             Despite the ubiquity of these interaction channels, the security risks introduced by such exposure remain largely underexplored.
           </p>
           <p>
-            In this work, we present the first systematic study of <mark class="k">indirect prompt injection</mark> attacks on mobile LLM agents,
-            where attacker-controlled content can steer an agent away from a benign user goal toward adversarial outcomes.
-            To enable rigorous evaluation, we build a scalable automated <mark class="k">mobile-agent red-teaming pipeline</mark> and use it to measure systemic risk.
-            As a first step, we deploy our pipeline on <mark class="k">Android</mark> and evaluate <strong>eight</strong> state-of-the-art mobile agents
-            spanning multiple architectures and underlying language models.
+            In this work, we present the first systematic study of indirect prompt injection attacks against mobile LLM agents via these third-party channels, 
+            where attacker-controlled content covertly steers an agent away from a benign user goal toward adversarial outcomes.
           </p>
           <p>
-            Simple attacks, such as injecting malicious instructions through fraudulent in-app advertisements, succeed in over <strong>80%</strong> of trials.
-            More complex workflows, including malware deployment that requires navigating operating-system warnings and multi-step interactions,
-            also succeed against advanced agents, with an average attack success rate of <strong>18.75%</strong>.
-            The results show that indirect prompt injection is a practical and scalable threat to mobile LLM agents,
-            highlighting the urgent need for defenses that account for the unique attack surfaces of mobile ecosystems.
+            To enable rigorous evaluation, we build a scalable automated red-teaming pipeline that synthesizes diverse adversarial scenarios by composing scenario templates with multiple prompt-injection patterns and attack distribution channels. 
+            The resulting attack behaviors are analyzed and categorized using the MITRE ATT\&CK Mobile framework, allowing us to ground agent-specific failures in established mobile threat models.
+          </p>
+          <p>
+            As a first step, we deploy our pipeline on Android and evaluate eight state-of-the-art mobile LLM agents spanning multiple architectures and underlying language models. 
+            We run over 3,000 adversarial trials paired with benign executions, enabling systematic measurement of attack success and agent robustness under realistic mobile conditions.
+            Our results reveal widespread vulnerabilities across agents. Simple attacks, such as injecting malicious instructions through fraudulent in-app advertisements, succeed in over 80\% of trials. 
+            More complex workflows, including malware deployment that requires navigating operating-system warnings and multi-step interactions, also succeed against advanced agents, with an average attack success rate of 18.75\%. 
+            The results show that indirect prompt injection is a practical and scalable threat to mobile LLM agents, highlighting the urgent need for defenses that account for the unique attack surfaces of mobile ecosystems.
           </p>
         </div>
       </div>
@@ -282,6 +284,35 @@
         <p><strong>Assumptions.</strong> OS/device uncompromised; user benign; no privileged exploits—attacks proceed via normal channels.</p>
       </div>
     </section>
+
+    <section id="redteaming">
+      <h2>End-to-end Red-teaming Pipeline</h2>
+    
+      <div class="card">
+        <p class="small">
+          This section presents our end-to-end automated red-teaming pipeline for Android mobile LLM agents.
+          The pipeline is designed to (i) be configurable, expressing diverse attack scenarios (attack templates,
+          prompt-injection patterns, entry channels, targets, and triggers) via a unified YAML scenario specification
+          without code changes; and (ii) scale to hundreds or thousands of trials across agents, apps, and attack variants,
+          enabling large-scale security evaluation and analysis.
+        </p>
+    
+        <div class="teaser" style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;">
+          <img src="./assets/img/overview2.png" alt="End-to-end red-teaming pipeline overview"
+               style="max-width:100%; height:auto; border-radius:12px;">
+        </div>
+    
+        <div class="small" style="margin-top:10px;">
+          <p><strong>System Overview.</strong> As shown above, the pipeline consists of three primary components:</p>
+          <ul class="klist">
+            <li><strong>(1) Adversarial Scenario Generator</strong> compiles YAML scenario specifications into executable trials by instantiating the test context (e.g., target agent and app) and the adversarial configuration (attack workflow, prompt injection pattern, and distribution channel).</li>
+            <li><strong>(2) Instrumented Android Testbed</strong> executes these trials on mobile LLM agents and target apps, with hooks to inject attacker-controlled inputs via in-app ad SDK channels and cross-app social-engineering channels. The testbed also provides observability and telemetry by collecting agent logs, on-device system logs, and ground-truth events from attacker-controlled endpoints.</li>
+            <li><strong>(3) Automated Attack Evaluator</strong> consumes the telemetry bundle to label agent behavior for each trial (Notice/Attempt/Execute), quantify attack success, and map successful behaviors to security and privacy implications using <em>MITRE ATT&amp;CK® Mobile</em> tactics for structured reporting.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
 
     <script>
       (function(){
