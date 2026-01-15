@@ -203,11 +203,13 @@
         <div class="track" id="cases-track">
           <div class="slide"><img src="./assets/img/fraud.png" alt="5.1 Fraudulent Ad Injection"></div>
           <div class="slide"><img src="./assets/img/fake_login.png" alt="5.2 Phishing via Fake Login"></div>
-          <div class="slide"><img src="./assets/img/credential.png" alt="5.3 Clipboard / OTP Harvesting"></div>
-          <div class="slide"><img src="./assets/img/discovery.png" alt="5.4 System Data Discovery"></div>
-          <div class="slide"><img src="./assets/img/lateral.png" alt="5.5 Cross-App Data Pivoting"></div>
-          <div class="slide"><img src="./assets/img/malicious.png" alt="5.6 Malicious App Deployment"></div>
-          <div class="slide"><img src="./assets/img/malware.png" alt="5.7 Malware Deployment"></div>
+          <div class="slide"><img src="./assets/img/leak_content.png" alt="5.3 Phishing (Content Leakage)"></div>
+          <div class="slide"><img src="./assets/img/credential.png" alt="5.4 Clipboard / OTP Harvesting"></div>
+          <div class="slide"><img src="./assets/img/discovery.png" alt="5.5 System Data Discovery"></div>
+          <div class="slide"><img src="./assets/img/lateral.png" alt="5.6 Cross-App Data Pivoting"></div>
+          <div class="slide"><img src="./assets/img/malicious.png" alt="5.7 Malicious App Deployment"></div>
+          <div class="slide"><img src="./assets/img/malware.png" alt="5.8 Malware Deployment"></div>
+
         </div>
         <button class="nav next" type="button" aria-label="Next">→</button>
         <div class="dots" id="cases-dots"></div>
@@ -222,23 +224,27 @@
           <p>Malicious links/ad redirects present look-alike pages; the agent auto-enters credentials or continues work on a fake note page, leaking sensitive data.</p>
         </div>
         <div class="case-desc hidden" data-idx="2">
-          <h3>5.3 Clipboard / OTP Harvesting</h3>
-          <p>Injected instructions in chat (e.g., WhatsApp) cause cross-app jumps to Messages to read OTPs and forward them back—immediate account takeover risk.</p>
+          <h3>5.3 Phishing (Content Leakage)</h3>
+          <p>Malicious redirects or embedded webviews present a look-alike Notes page; the agent continues the task on the fake page and leaks content without noticing the switch.</p>
         </div>
         <div class="case-desc hidden" data-idx="3">
-          <h3>5.4 System Data Discovery</h3>
-          <p>Multi-stage chain: ad → web prompt → Settings to collect SSID / IP / MAC, then exfil via email.</p>
+          <h3>5.4 Clipboard / OTP Harvesting</h3>
+          <p>Injected instructions in chat (e.g., WhatsApp) cause cross-app jumps to Messages to read OTPs and forward them back—immediate account takeover risk.</p>
         </div>
         <div class="case-desc hidden" data-idx="4">
-          <h3>5.5 Cross-App Data Pivoting</h3>
-          <p>Email-borne prompt redirects Gmail → Contacts to fetch “Dad’s” number → reply in Gmail, showing autonomous cross-app traversal and exfiltration.</p>
+          <h3>5.5 System Data Discovery</h3>
+          <p>Multi-stage chain: ad → web prompt → Settings to collect SSID / IP / MAC, then exfil via email.</p>
         </div>
         <div class="case-desc hidden" data-idx="5">
-          <h3>5.6 Malicious App Deployment</h3>
-          <p>Ad-driven diversion to store page leads the agent to install/open an app and grant permissions, yielding persistence and privilege expansion.</p>
+          <h3>5.6 Cross-App Data Pivoting</h3>
+          <p>Email-borne prompt redirects Gmail → Contacts to fetch “Dad’s” number → reply in Gmail, showing autonomous cross-app traversal and exfiltration.</p>
         </div>
         <div class="case-desc hidden" data-idx="6">
-          <h3>5.7 Malware Deployment (Sideload)</h3>
+          <h3>5.7 Malicious App Deployment</h3>
+          <p>Ad-driven diversion to store page leads the agent to install/open an app and grant permissions, yielding persistence and privilege expansion.</p>
+        </div>
+        <div class="case-desc hidden" data-idx="7">
+          <h3>5.8 Malware Deployment (Sideload)</h3>
           <p>Browser download with warnings bypassed and an installer chain completes sideloading; malware can execute and connect to remote control.</p>
         </div>
       </div>
