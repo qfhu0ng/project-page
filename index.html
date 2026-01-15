@@ -147,11 +147,11 @@
       </div>
       <div class="buttons">
         <a class="btn" href="#abstract">📑 Abstract</a>
+        <a class="btn" href="#redteaming">🧪 Red-Teaming</a>
         <a class="btn" href="#cases">🗂️ Case Studies</a>
         <a class="btn" href="#overview">💡 Contributions</a>
         <a class="btn" href="#background">📚 Background</a>
         <a class="btn" href="#threat-model">⚠️ Threat Model</a>
-        <a class="btn" href="#redteaming">🧪 Red-Teaming</a>
         <a class="btn" href="#demo">▶️ Demo</a>
         <a class="btn" href="#artifacts">🛠️ Artifacts & Code</a>
         <a class="btn" href="#bib">🔖 BibTeX</a>
@@ -161,6 +161,33 @@
 
   <main class="container">
     <!-- Teaser + Abstract -->
+    <section id="redteaming">
+      <h2>End-to-end Red-teaming Pipeline</h2>
+    
+      <div class="card">
+        <p class="small">
+          This section presents our end-to-end automated red-teaming pipeline for Android mobile LLM agents.
+          The pipeline is designed to (i) be configurable, expressing diverse attack scenarios (attack templates,
+          prompt-injection patterns, entry channels, targets, and triggers) via a unified YAML scenario specification
+          without code changes; and (ii) scale to hundreds or thousands of trials across agents, apps, and attack variants,
+          enabling large-scale security evaluation and analysis.
+        </p>
+    
+        <div class="teaser" style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;">
+          <img src="./assets/img/overview2.png" alt="End-to-end red-teaming pipeline overview"
+               style="max-width:100%; height:auto; border-radius:12px;">
+        </div>
+    
+        <div class="small" style="margin-top:10px;">
+          <p><strong>System Overview.</strong> As shown above, the pipeline consists of three primary components:</p>
+          <ul class="klist">
+            <li><strong>(1) Adversarial Scenario Generator</strong> compiles YAML scenario specifications into executable trials by instantiating the test context (e.g., target agent and app) and the adversarial configuration (attack workflow, prompt injection pattern, and distribution channel).</li>
+            <li><strong>(2) Instrumented Android Testbed</strong> executes these trials on mobile LLM agents and target apps, with hooks to inject attacker-controlled inputs via in-app ad SDK channels and cross-app social-engineering channels. The testbed also provides observability and telemetry by collecting agent logs, on-device system logs, and ground-truth events from attacker-controlled endpoints.</li>
+            <li><strong>(3) Automated Attack Evaluator</strong> consumes the telemetry bundle to label agent behavior for each trial (Notice/Attempt/Execute), quantify attack success, and map successful behaviors to security and privacy implications using <em>MITRE ATT&amp;CK® Mobile</em> tactics for structured reporting.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
     <section id="teaser" class="row">
       <div class="col">
         <div class="teaser">
@@ -237,7 +264,7 @@
         </div>
         <div class="case-desc hidden" data-idx="5">
           <h3>5.6 Cross-App Data Pivoting</h3>
-          <p>Email-borne prompt redirects Gmail → Contacts to fetch “Dad’s” number → reply in Gmail, showing autonomous cross-app traversal and exfiltration.</p>
+          <p>Email-borne prompt redirects Gmail → Contacts to fetch “Dad's” number → reply in Gmail, showing autonomous cross-app traversal and exfiltration.</p>
         </div>
         <div class="case-desc hidden" data-idx="6">
           <h3>5.7 Malicious App Deployment</h3>
@@ -291,33 +318,7 @@
       </div>
     </section>
 
-    <section id="redteaming">
-      <h2>End-to-end Red-teaming Pipeline</h2>
-    
-      <div class="card">
-        <p class="small">
-          This section presents our end-to-end automated red-teaming pipeline for Android mobile LLM agents.
-          The pipeline is designed to (i) be configurable, expressing diverse attack scenarios (attack templates,
-          prompt-injection patterns, entry channels, targets, and triggers) via a unified YAML scenario specification
-          without code changes; and (ii) scale to hundreds or thousands of trials across agents, apps, and attack variants,
-          enabling large-scale security evaluation and analysis.
-        </p>
-    
-        <div class="teaser" style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;">
-          <img src="./assets/img/overview2.png" alt="End-to-end red-teaming pipeline overview"
-               style="max-width:100%; height:auto; border-radius:12px;">
-        </div>
-    
-        <div class="small" style="margin-top:10px;">
-          <p><strong>System Overview.</strong> As shown above, the pipeline consists of three primary components:</p>
-          <ul class="klist">
-            <li><strong>(1) Adversarial Scenario Generator</strong> compiles YAML scenario specifications into executable trials by instantiating the test context (e.g., target agent and app) and the adversarial configuration (attack workflow, prompt injection pattern, and distribution channel).</li>
-            <li><strong>(2) Instrumented Android Testbed</strong> executes these trials on mobile LLM agents and target apps, with hooks to inject attacker-controlled inputs via in-app ad SDK channels and cross-app social-engineering channels. The testbed also provides observability and telemetry by collecting agent logs, on-device system logs, and ground-truth events from attacker-controlled endpoints.</li>
-            <li><strong>(3) Automated Attack Evaluator</strong> consumes the telemetry bundle to label agent behavior for each trial (Notice/Attempt/Execute), quantify attack success, and map successful behaviors to security and privacy implications using <em>MITRE ATT&amp;CK® Mobile</em> tactics for structured reporting.</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+
 
 
     <script>
